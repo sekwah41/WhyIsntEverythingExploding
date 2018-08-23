@@ -1,0 +1,10 @@
+{
+  "id": "whyisnteverythingexploding",
+  "name": "Why isn't everything exploding?",
+  "authors": [
+    "Sekwah41"
+  ],
+  "listeners": [
+    "com.teamsekc.whyisnteverythingexploding.WhyIsntEverythingExploding"
+  ]
+}
