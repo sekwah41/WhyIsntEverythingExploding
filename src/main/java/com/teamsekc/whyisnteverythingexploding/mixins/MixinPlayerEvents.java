@@ -1,5 +1,6 @@
 package com.teamsekc.whyisnteverythingexploding.mixins;
 
+import com.teamsekc.whyisnteverythingexploding.WhyIsntEverythingExploding;
 import com.teamsekc.whyisnteverythingexploding.enums.ExplosionValues;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EntityType;
@@ -23,16 +24,20 @@ public abstract class MixinPlayerEvents extends EntityLivingBase {
 
     @Inject(method = "trySleep", at = @At("RETURN"))
     public EntityPlayer.SleepResult trySleep(BlockPos p_trySleep_1_, CallbackInfoReturnable ci) {
-            this.explodeEntity(ExplosionValues.SLEEP);
-            return (EntityPlayer.SleepResult) ci.getReturnValue();
+        this.explodeEntity(ExplosionValues.SLEEP);
+        return (EntityPlayer.SleepResult) ci.getReturnValue();
     }
 
     private void explodeEntity(ExplosionValues explosion) {
-        if (!this.world.isRemote && ExplosionValues.shouldExplode(explosion)) {
-            float average = (this.width + this.height) * 0.5f * explosion.size;
-            boolean mobGriefing = explosion.damageWorld && this.world.getGameRules().getBoolean("mobGriefing");
-            this.world.createExplosion(explosion.canDamageSelf ? null : this, this.posX, this.posY, this.posZ, average, mobGriefing);
+        if (!this.world.isRemote && this.shouldExplode(explosion)) {
+            float average = (this.width + this.height) * 0.5f * explosion.getSize();
+            boolean mobGriefing = explosion.getDamageWorld() && this.world.getGameRules().getBoolean("mobGriefing");
+            this.world.createExplosion(explosion.getCanDamageSelf() ? null : this, this.posX, this.posY, this.posZ, average, mobGriefing);
         }
+    }
+
+    private boolean shouldExplode(ExplosionValues value) {
+        return Math.random() < value.getChance();
     }
 
 }

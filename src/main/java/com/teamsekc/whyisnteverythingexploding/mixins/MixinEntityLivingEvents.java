@@ -42,11 +42,15 @@ public abstract class MixinEntityLivingEvents extends Entity {
     }
 
     private void explodeEntity(ExplosionValues explosion) {
-        if (!this.world.isRemote && ExplosionValues.shouldExplode(explosion)) {
-            float average = (this.width + this.height) * 0.5f * explosion.size;
-            boolean mobGriefing = explosion.damageWorld && this.world.getGameRules().getBoolean("mobGriefing");
-            this.world.createExplosion(explosion.canDamageSelf ? null : this, this.posX, this.posY, this.posZ, average, mobGriefing);
+        if (!this.world.isRemote && this.shouldExplode(explosion)) {
+            float average = (this.width + this.height) * 0.5f * explosion.getSize();
+            boolean mobGriefing = explosion.getDamageWorld() && this.world.getGameRules().getBoolean("mobGriefing");
+            this.world.createExplosion(explosion.getCanDamageSelf() ? null : this, this.posX, this.posY, this.posZ, average, mobGriefing);
         }
+    }
+
+    private boolean shouldExplode(ExplosionValues value) {
+        return Math.random() < value.getChance();
     }
 
 }
